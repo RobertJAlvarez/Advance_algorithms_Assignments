@@ -1,0 +1,12 @@
+# Advance algorithms Assignment 1
+
+- A fold function that takes an array (list) and its size in argument, as well as a seed and a function and that folds the array with the function, starting with the seed. The fold function needs to be recursive. You must then instantiate the fold function to make it a sum function, a product function, a minimum and a maximum function.
+- A k-minimum function that returns the k minimal values (the minimum, the second but minimum value, etc.) of an array (list) of n elements. The function can be recursive but does not need to be recursive. You should make the function optimal in terms of complexity, for varying values of k and n.
+- A merge sort function.
+- A multiplication function that takes an array a of n positive or zero integer digits, an array b of n positive or zero integer digits, representing integers in any unknown radix beta greater or equal to 2 in argument, as well as a multiplication and an addition function for two integer digits in that base returning two digits representing their product resp. sum, in argument and that returns an array c of 2n digits representing the product of a and b. The function can be recursive but does not need to. A C prototype could be:
+`void multiply_schoolbook(uint32_t *c, const uint32_t *a, const uint32_t *b, size_t n, void (*mul)(uint32_t *h, uint32_t *l, uint32_t a, uint32_t b), void (*add)(uint32_t *h, uint32_t *l, uint32_t a, uint32_t b));`
+
+- Your function needs to work in any radix beta. Its complexity can be O(n^2).
+A multiplication function that takes an array a of n positive or zero integer digits, an array b of n positive or zero integer digits, representing integers in any unknown radix beta greater or equal to 2 in argument, as well as a multiplication and an addition function for two integer digits in that base returning two digits representing their product resp. sum, in argument and that returns an array c of 2n digits representing the product of a and b. The function can be recursive but does not need to. A C prototype could be:
+`void multiply_faster(uint32_t *c, const uint32_t *a, const uint32_t *b, size_t n, void (*mul)(uint32_t *h, uint32_t *l, uint32_t a, uint32_t b), void (*add)(uint32_t *h, uint32_t *l, uint32_t a, uint32_t b));`
+
