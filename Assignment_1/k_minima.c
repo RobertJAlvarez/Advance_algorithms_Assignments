@@ -24,23 +24,23 @@ static size_t partition(int *arr, size_t high)
   return i;
 }
 
-void quick_sort(int *arr, ssize_t high, size_t k)
+void k_minima(int *arr, ssize_t high, size_t k)
 {
   if (high <= 0) return;
 
   size_t pi = partition(arr, (size_t) high);
-  quick_sort(arr, pi-1, k);
+  k_minima(arr, pi-1, k);
 
   // Only sort sub array above pivot if k > pivot
   if (pi < k)
-    quick_sort(&arr[pi+1], high-(pi+1), k-(pi+1));
+    k_minima(&arr[pi+1], high-(pi+1), k-(pi+1));
 }
 
 int main(void)
 {
   int *nums;
-  int SIZE = 20;
-  size_t k = 2;
+  int SIZE = 10;
+  size_t k = 5;
 
   if ((nums = gen_ran_arr(SIZE)) == NULL) return 1;
 
@@ -49,7 +49,7 @@ int main(void)
   printf("Before: ");
   print_nums(nums, SIZE);
 
-  quick_sort(nums, ((ssize_t) SIZE-1), k);
+  k_minima(nums, ((ssize_t) SIZE-1), k);
 
   printf(" After: ");
   print_nums(nums, SIZE);
