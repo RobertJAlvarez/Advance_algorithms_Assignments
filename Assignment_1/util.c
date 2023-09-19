@@ -40,10 +40,19 @@ void sub10(uint32_t *h, uint32_t *l, uint32_t a, const uint32_t b)
 {
   *h = ((uint32_t) 0);
   if (a < b) {
-    a += 10;
+    a += ((uint32_t) 10);
     *h = ((uint32_t) 1);
   }
-  *l =  a - b;
+  *l = a - b;
+}
+
+int comp10(const uint32_t *a1, const uint32_t *a2, const size_t n)
+{
+  for (size_t i = 0; i < n; ++i) {
+    if (a1[i] != a2[i]) return a1[i] - a2[i];
+  }
+
+  return 0;
 }
 
 void print_uint_nums(const uint32_t *arr, const size_t n)
