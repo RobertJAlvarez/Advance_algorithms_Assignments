@@ -29,11 +29,14 @@ void k_minima(int *arr, ssize_t high, size_t k)
   if (high <= 0) return;
 
   size_t pi = partition(arr, (size_t) high);
-  k_minima(arr, pi-1, k);
+
+  if (pi == k-1) return;
 
   // Only sort sub array above pivot if k > pivot
   if (pi < k)
     k_minima(&arr[pi+1], high-(pi+1), k-(pi+1));
+  else
+    k_minima(arr, pi-1, k);
 }
 
 int main(void)
