@@ -265,21 +265,21 @@ int main(void)
 
   base = 10;
 
-  for (size_t i = ((size_t) 1); i < base; ++i) {
+  for (size_t size = ((size_t) 1); size < base; ++size) {
     n_pass = ((size_t) 0);
     for (size_t j = ((size_t) 0); j < N_TESTS; ++j) {
-      if ((a = gen_uint_arr(i,base,0)) == NULL) return 0;
-      if ((b = gen_uint_arr(i,base,10)) == NULL) {
+      if ((a = gen_uint_arr(size,base,0)) == NULL) return 0;
+      if ((b = gen_uint_arr(size,base,10)) == NULL) {
         free(a);
         return 1;
       }
 
-      n_pass += ((size_t) check_mul(a, b, i));
+      n_pass += ((size_t) check_mul(a, b, size));
 
       free(a);
       free(b);
     }
-    printf("%zu/%zu pass for arrays of size %zu\n", n_pass, N_TESTS, i);
+    printf("%zu/%zu pass for arrays of size %zu\n", n_pass, N_TESTS, size);
   }
 
   return 0;

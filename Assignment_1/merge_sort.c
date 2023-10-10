@@ -1,6 +1,21 @@
 #include <stdio.h>  // printf()
+#include <stdlib.h> // qsort(), malloc(), free()
 #include <string.h> // memcpy()
 #include "util.h"
+
+// Function to be use in qsort() to compare merge sort result
+int cmpfunc(const void * a, const void * b)
+{
+   return ( *((int *) a) - *((int *) b) );
+}
+
+static int eq_arr(const int *a, const int *b, const size_t n)
+{
+  for (size_t i = 0; i < n; ++i)
+    if (a[i] != b[i]) return 0;
+
+  return 1;
+}
 
 static int merge(int *arr, size_t l_size, size_t r_size)
 {
@@ -39,21 +54,38 @@ int merge_sort(int *arr, size_t n)
 
 int main(void)
 {
-  int *arr;
-  int SIZE = 20;
+  int *arr, *copy_arr;
+  int n_pass;
+  size_t size;
+  const int N_TESTS = 10;
 
-  if ((arr = gen_ran_arr(SIZE)) == NULL) return 1;
+  for (size = ((size_t) 1); size < ((size_t) 50); size += ((size_t) 5)) {
+    n_pass = 0;
+    for (int i = 0; i < N_TESTS; ++i) {
+      if ((arr = gen_ran_arr(size)) == NULL) return 1;
 
-  printf("Unsorted numbers: ");
-  print_nums(arr, SIZE);
+      if ((copy_arr = (int *) malloc(size*sizeof(int)))== NULL) {
+        free(arr);
+        return 1;
+      }
 
-  if (merge_sort(arr, SIZE)) {
-    printf("Error while executing merge sort:(\n");
-    return 1;
+      memcpy(copy_arr, arr, size*sizeof(int));
+
+      if (merge_sort(arr, size)) {
+        printf("Error while executing merge sort:(\n");
+        return 1;
+      }
+
+      qsort(copy_arr, size, sizeof(int), cmpfunc);
+
+      n_pass += eq_arr(arr, copy_arr, size);
+
+      free(arr);
+      free(copy_arr);
+    }
+
+    printf("%d/%d pass for array of size %zu\n", n_pass, N_TESTS, size);
   }
-
-  printf("  Sorted numbers: ");
-  print_nums(arr, SIZE);
 
   return 0;
 }
