@@ -88,6 +88,16 @@ static int compare_key(void *ptr_a, void *ptr_b, void *data)
   return strcmp(str_a, str_b);
 }
 
+static void print_menu(void)
+{
+  printf("1. Print tree characteristics.\n");
+  printf("2. Insert new node.\n");
+  printf("3. Search for node.\n");
+  printf("4. Delete node.\n");
+  printf("5. Print tree.\n");
+  printf("6. Exit\n");
+}
+
 int main(int argc, char **argv)
 {
   char key[LINE_BUFFER_LEN];
@@ -98,71 +108,88 @@ int main(int argc, char **argv)
   tree = red_black_tree_create();
 
   while (1) {
-    printf("The current search tree has %zu entries.\n", red_black_tree_number_entries(tree));
-    printf("The current search tree has height %zu.\n", red_black_tree_height(tree));
+    print_menu();
 
-    // Print tree min
-    red_black_tree_minimum((void **) &temp_key, (void **) &temp_value, tree);
-    if ((temp_key != NULL) && (temp_value != NULL)) {
-      printf("The minimum key is \"%s\", the associated value is \"%s\".\n",
-             temp_key, temp_value);
-    } else {
-      printf("The tree has no minimum key.\n");
-    }
-
-    // Print tree max
-    red_black_tree_maximum((void **) &temp_key, (void **) &temp_value, tree);
-    if ((temp_key != NULL) && (temp_value != NULL)) {
-      printf("The maximum key is \"%s\", the associated value is \"%s\".\n", temp_key, temp_value);
-    } else {
-      printf("The tree has no maximum key.\n");
-    }
-
-    // Read new key
-    printf("Please enter a key to add to the tree. Enter <Q> to stop.\n");
     input_string(key, sizeof(key));
-    // Break if <Q>
-    if (strcmp(key, "<Q>") == 0) break;
-    // Read new value
-    printf("Please enter a value associated with the key.\n");
-    input_string(value, sizeof(value));
-    // If node with same key already exist, don't add new node. Otherwise, insert it into tree
-    temp_value = red_black_tree_search(tree, key, compare_key, NULL);
-    if (temp_value != NULL) {
-      printf("Cannot enter the new key \"%s\" with new value \"%s\" as the tree already contains the key with value \"%s\".\n", key, value, temp_value);
-    } else {
-      red_black_tree_insert(tree, key, value, compare_key, copy_key, copy_value, NULL);
-    }
+    if (key[0] == '6') break;
 
-    // Ask user to search something
-    printf("Please enter a key to search for in the tree.\n");
-    input_string(key, sizeof(key));
-    temp_value = red_black_tree_search(tree, key, compare_key, NULL);
-    // If key exists in tree, ...
-    if (temp_value != NULL) {
-      // Search and print key and value of predecessor, if it exists
-      printf("The tree contains the key \"%s\" with the associated value \"%s\".\n", key, temp_value);
-      red_black_tree_predecessor((void **) &temp_key, (void **) &temp_value, tree, key, compare_key, NULL);
-      if ((temp_key == NULL) || (temp_value == NULL)) {
-        printf("The key \"%s\" does not have a predecessor in the tree.\n", key);
+    switch (atoi(key)) {
+    case 1:
+      printf("The current search tree has %zu entries.\n", red_black_tree_number_entries(tree));
+      printf("The current search tree has height %zu.\n", red_black_tree_height(tree));
+
+      // Print tree min
+      red_black_tree_minimum((void **) &temp_key, (void **) &temp_value, tree);
+      if ((temp_key != NULL) && (temp_value != NULL)) {
+        printf("The minimum key is \"%s\", the associated value is \"%s\".\n", temp_key, temp_value);
       } else {
-        printf("The key \"%s\" has the predecessor key \"%s\" with value \"%s\".\n", key, temp_key, temp_value);
+        printf("The tree has no minimum key.\n");
       }
-      // Search and print key and value of successor, if it exists
-      red_black_tree_successor((void **) &temp_key, (void **) &temp_value, tree, key, compare_key, NULL);
-      if ((temp_key == NULL) || (temp_value == NULL)) {
-        printf("The key \"%s\" does not have a successor in the tree.\n", key);
+
+      // Print tree max
+      red_black_tree_maximum((void **) &temp_key, (void **) &temp_value, tree);
+      if ((temp_key != NULL) && (temp_value != NULL)) {
+        printf("The maximum key is \"%s\", the associated value is \"%s\".\n", temp_key, temp_value);
       } else {
-        printf("The key \"%s\" has the successor key \"%s\" with value \"%s\".\n", key, temp_key, temp_value);
+        printf("The tree has no maximum key.\n");
       }
-    } else {
-      printf("The tree does not contain an entry with key \"%s\".\n", key);
-    }
-    // Ask user to delete something or <N> to skip
-    printf("Please enter a key to delete from the tree. Enter <N> to delete nothing.\n");
-    input_string(key, sizeof(key));
-    if (strcmp(key, "<N>") != 0) {
-      red_black_tree_remove(tree, key, compare_key, delete_key, delete_value, NULL);
+      break;
+    case 2:
+      // Read new key
+      printf("Please enter a key to add to the tree. Enter <Q> to stop.\n");
+      input_string(key, sizeof(key));
+      // Break if <Q>
+      if (strcmp(key, "<Q>") == 0) break;
+      // Read new value
+      printf("Please enter a value associated with the key.\n");
+      input_string(value, sizeof(value));
+      // If node with same key already exist, don't add new node. Otherwise, insert it into tree
+      temp_value = red_black_tree_search(tree, key, compare_key, NULL);
+      if (temp_value != NULL) {
+        printf("Cannot enter the new key \"%s\" with new value \"%s\" as the tree already contains the key with value \"%s\".\n", key, value, temp_value);
+      } else {
+        red_black_tree_insert(tree, key, value, compare_key, copy_key, copy_value, NULL);
+      }
+      break;
+    case 3:
+      // Ask user to search something
+      printf("Please enter a key to search for in the tree.\n");
+      input_string(key, sizeof(key));
+      temp_value = red_black_tree_search(tree, key, compare_key, NULL);
+      // If key exists in tree, ...
+      if (temp_value != NULL) {
+        // Search and print key and value of predecessor, if it exists
+        printf("The tree contains the key \"%s\" with the associated value \"%s\".\n", key, temp_value);
+        red_black_tree_predecessor((void **) &temp_key, (void **) &temp_value, tree, key, compare_key, NULL);
+        if ((temp_key == NULL) || (temp_value == NULL)) {
+          printf("The key \"%s\" does not have a predecessor in the tree.\n", key);
+        } else {
+          printf("The key \"%s\" has the predecessor key \"%s\" with value \"%s\".\n", key, temp_key, temp_value);
+        }
+        // Search and print key and value of successor, if it exists
+        red_black_tree_successor((void **) &temp_key, (void **) &temp_value, tree, key, compare_key, NULL);
+        if ((temp_key == NULL) || (temp_value == NULL)) {
+          printf("The key \"%s\" does not have a successor in the tree.\n", key);
+        } else {
+          printf("The key \"%s\" has the successor key \"%s\" with value \"%s\".\n", key, temp_key, temp_value);
+        }
+      } else {
+        printf("The tree does not contain an entry with key \"%s\".\n", key);
+      }
+      break;
+    case 4:
+      // Ask user to delete something or <N> to skip
+      printf("Please enter a key to delete from the tree. Enter <N> to delete nothing.\n");
+      input_string(key, sizeof(key));
+      if (strcmp(key, "<N>") != 0) {
+        red_black_tree_remove(tree, key, compare_key, delete_key, delete_value, NULL);
+      }
+      break;
+    case 5:
+      print2D(tree);
+      break;
+    case 6:
+    default:
     }
   }
 

@@ -18,6 +18,9 @@ typedef struct __red_black_tree_struct_t {
   tree_node_t *root;
 } red_black_tree_t;
 
+/* Print red-black tree */
+void print2D(red_black_tree_t *tree);
+
 /* Creates an empty red-black tree */
 red_black_tree_t *red_black_tree_create(void);
 
