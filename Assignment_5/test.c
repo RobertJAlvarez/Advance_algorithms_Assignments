@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <errno.h>
 #include "redblacktrees.h"
+#include "searchtrees.h"
 
 #define LINE_BUFFER_LEN ((size_t) 4096)
 
@@ -80,10 +81,10 @@ static void *copy_value(void *ptr, void *data)
   return copy_string(ptr);
 }
 
-static int compare_key(void *ptr_a, void *ptr_b, void *data)
+static int compare_key(const void *ptr_a, const void *ptr_b, void *data)
 {
-  char *str_a = ptr_a;
-  char *str_b = ptr_b;
+  const char *str_a = ptr_a;
+  const char *str_b = ptr_b;
 
   return strcmp(str_a, str_b);
 }
@@ -98,7 +99,7 @@ static void print_menu(void)
   printf("6. Exit\n");
 }
 
-int main(int argc, char **argv)
+static void menu(void)
 {
   char key[LINE_BUFFER_LEN];
   char value[LINE_BUFFER_LEN];
@@ -117,6 +118,9 @@ int main(int argc, char **argv)
     case 1:
       printf("The current search tree has %zu entries.\n", red_black_tree_number_entries(tree));
       printf("The current search tree has height %zu.\n", red_black_tree_height(tree));
+      if (is_balanced(tree) < 0) {
+        printf("WARNING: tree is not balanced\n");
+      }
 
       // Print tree min
       red_black_tree_minimum((void **) &temp_key, (void **) &temp_value, tree);
@@ -186,15 +190,68 @@ int main(int argc, char **argv)
       }
       break;
     case 5:
-      print2D(tree);
+      print2D(tree, /*print_all = */1);
       break;
     case 6:
     default:
+    ;
     }
   }
 
   // Delete everything from tree
   red_black_tree_delete(tree, delete_key, delete_value, NULL);
+}
+
+static char *rand_string(char *str, size_t size)
+{
+  const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  if (size) {
+    --size;
+    for (size_t n = 0; n < size; n++) {
+      int key = rand() % (int) (sizeof charset - 1);
+      str[n] = charset[key];
+    }
+    str[size] = '\0';
+  }
+
+  return str;
+}
+
+static void random_generation(void)
+{
+  const int BUFFER_LEN = 6;
+  char key[BUFFER_LEN];
+  char value[BUFFER_LEN];
+  red_black_tree_t *tree;
+
+  tree = red_black_tree_create();
+
+  for (int i = 1; i < 200; ++i) {
+    rand_string(key, BUFFER_LEN);
+
+    if (red_black_tree_search(tree, key, compare_key, NULL) == NULL) {
+      rand_string(value, BUFFER_LEN);
+      red_black_tree_insert(tree, key, value, compare_key, copy_key, copy_value, NULL);
+
+      if (is_balanced(tree) < 0) {
+        printf("---\n");
+        fprintf(stderr, "WARNING: tree is not balanced\n");
+        print2D(tree, /*print_all = */0);
+        printf("---\n");
+      }
+    }
+  }
+
+  // Delete everything from tree
+  red_black_tree_delete(tree, delete_key, delete_value, NULL);
+}
+
+int main(void)
+{
+  // menu();
+
+  random_generation();
 
   return 0;
 }
