@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -343,10 +344,19 @@ static void random_generation(void)
 {
   const int N_FILES = 10;
   FILE *fptr;
-  char filename[] = "results*.csv";
+  char filename[] = "results/result**.csv";
+  char *t;
+  int move_files;
+
+  if ((move_files = mkdir("results", 0744)) != 0) {
+    fprintf(stderr, "Error creating \"results\" folder, %d\n", errno);
+    printf("Note: Make sure that \"results\" folder doesn't exists before running this code.\n");
+    exit(1);
+  }
 
   for (int i = 1; i <= N_FILES; ++i) {
-    filename[7] = '0'+i;
+    t = &filename[14] + sprintf(&filename[14], "%d", i);
+    sprintf(t, "%s", ".csv");
 
     fptr = fopen(filename, "w");
 

@@ -17,6 +17,7 @@ run: test
 
 clean:
 	rm -f *.o test
+	rm -rf results
 
 redblacktrees.o: redblacktrees.c redblacktrees.h
 searchtrees.o: searchtrees.c searchtrees.h
