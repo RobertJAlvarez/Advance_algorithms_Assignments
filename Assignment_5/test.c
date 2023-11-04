@@ -219,14 +219,15 @@ static char *rand_string(char *str, size_t size)
   return str;
 }
 
-static void random_generation(void)
+static void compare_rbt_bst(FILE *fd)
 {
   const int BUFFER_LEN = 8;
-  const int MAX_SHIFTS = 15;
-  int n_keys;
-  char keys[2<<MAX_SHIFTS][BUFFER_LEN];
+  const int MAX_SHIFTS = 16;
+
   char value[BUFFER_LEN];
+  char keys[1<<MAX_SHIFTS][BUFFER_LEN];
   char key[BUFFER_LEN];
+  int n_keys;
 
   clock_t t, rbt_time, bst_time;
   int shifts, i;
@@ -237,11 +238,11 @@ static void random_generation(void)
   rbt = red_black_tree_create();
   bst = search_tree_create();
 
-  printf("n_keys,insert_rbt,insert_bst,search_existent,serch_non_existent,remove_keys_rbt,remove_keys_bst\n");
+  fprintf(fd, "n_keys,insert_rbt,insert_bst,search_existent_rbt,search_existent_bst,serch_non_existent_rbt,serch_non_existent_bst,remove_keys_rbt,remove_keys_bst\n");
 
   for (shifts = 2; shifts <= MAX_SHIFTS; ++shifts) {
     n_keys = 1 << shifts;
-    printf("%d,", n_keys);
+    fprintf(fd, "%d,", n_keys);
 
     /* Create red-black tree and bst with n_keys. At the end, print
      * time elapse to make all n_keys insertions per tree.
@@ -262,15 +263,15 @@ static void random_generation(void)
         bst_time += (clock() - t);
 
         if (red_black_tree_is_balanced(rbt) < 0) {
-          printf("---\n");
+          fprintf(stderr, "---\n");
           fprintf(stderr, "WARNING: tree is not balanced\n");
           print2D(rbt, /*print_all = */0);
-          printf("---\n");
+          fprintf(stderr, "---\n");
         }
       }
     }
-    printf("%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
-    printf("%f,", ((double) bst_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) bst_time)/CLOCKS_PER_SEC);
 
     // Perform search for all n_keys
     rbt_time = bst_time = 0;
@@ -283,8 +284,8 @@ static void random_generation(void)
       search_tree_search(bst, keys[i], compare_key, NULL);
       bst_time += (clock() - t);
     }
-    printf("%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
-    printf("%f,", ((double) bst_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) bst_time)/CLOCKS_PER_SEC);
 
     // Perform search for n_keys keys that are not in tree
     rbt_time = bst_time = 0;
@@ -299,8 +300,8 @@ static void random_generation(void)
       search_tree_search(bst, key, compare_key, NULL);
       bst_time += (clock() - t);
     }
-    printf("%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
-    printf("%f,", ((double) bst_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) bst_time)/CLOCKS_PER_SEC);
 
     // Delete one key at a time for each tree and print total time
     rbt_time = bst_time = 0;
@@ -313,13 +314,47 @@ static void random_generation(void)
       search_tree_remove(bst, keys[i], compare_key, delete_key, delete_value, NULL);
       bst_time += (clock() - t);
     }
-    printf("%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
-    printf("%f\n", ((double) bst_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f\n", ((double) bst_time)/CLOCKS_PER_SEC);
   }
 
   // Delete everything from tree
   red_black_tree_delete(rbt, delete_key, delete_value, NULL);
   search_tree_delete(bst, delete_key, delete_value, NULL);
+}
+
+static void print_wait_message(int n) {
+  int j, k;
+
+  printf("Running %d", n);
+
+  j = n % 10;
+  k = n % 100;
+
+  if (j == 1 && k != 11) printf("st");
+  else if (j == 2 && k != 12) printf("nd");
+  else if (j == 3 && k != 13) printf("rd");
+  else printf("th");
+
+  printf(" comparison...\n");
+}
+
+static void random_generation(void)
+{
+  const int N_FILES = 10;
+  FILE *fptr;
+  char filename[] = "results*.csv";
+
+  for (int i = 1; i <= N_FILES; ++i) {
+    filename[7] = '0'+i;
+
+    fptr = fopen(filename, "w");
+
+    print_wait_message(i);
+    compare_rbt_bst(fptr);
+
+    fclose(fptr);
+  }
 }
 
 int main(void)

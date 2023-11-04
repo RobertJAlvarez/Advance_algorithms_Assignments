@@ -1,7 +1,6 @@
 CC   = cc
 OBJS = redblacktrees.o searchtrees.o
 
-# -Wextra
 CFLAGS = -O3 -g3 -Wall -Wextra -Werror=format-security -Werror=implicit-function-declaration \
          -Wshadow -Wpointer-arith -Wcast-align -Wstrict-prototypes -Wwrite-strings -Wno-unused-parameter
 
