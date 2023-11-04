@@ -3,23 +3,10 @@
 
 #include <stdlib.h>
 
-typedef enum { RED_BLACK_TREE_COLOR_RED, RED_BLACK_TREE_COLOR_BLACK } color_t;
-
-typedef struct __tree_node_struct_t {
-  void *key;
-  void *value;
-  color_t color;
-  struct __tree_node_struct_t *parent;
-  struct __tree_node_struct_t *left;
-  struct __tree_node_struct_t *right;
-} tree_node_t;
-
-typedef struct __red_black_tree_struct_t {
-  tree_node_t *root;
-} red_black_tree_t;
+typedef struct __red_black_tree_struct_t red_black_tree_t;
 
 /* Print red-black tree */
-void print2D(red_black_tree_t *tree);
+void print2D(const red_black_tree_t *tree, const int print_all);
 
 /* Creates an empty red-black tree */
 red_black_tree_t *red_black_tree_create(void);
@@ -38,13 +25,13 @@ void red_black_tree_delete(
 
    Returns zero for an empty tree.
 */
-size_t red_black_tree_number_entries(red_black_tree_t *tree);
+size_t red_black_tree_number_entries(const red_black_tree_t *tree);
 
 /* Returns the height of a red-black tree
 
    Returns zero for an empty tree.
 */
-size_t red_black_tree_height(red_black_tree_t *tree);
+size_t red_black_tree_height(const red_black_tree_t *tree);
 
 /* Searches a red-black tree for a key, comparing keys with
    compare_key, returning the associated value.
@@ -56,9 +43,9 @@ size_t red_black_tree_height(red_black_tree_t *tree);
    ordering of the two keys.
 */
 void *red_black_tree_search(
-  red_black_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const red_black_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data
 );
 
@@ -71,7 +58,7 @@ void *red_black_tree_search(
 void red_black_tree_minimum(
   void **min_key,
   void **min_value,
-  red_black_tree_t *tree
+  const red_black_tree_t *tree
 );
 
 /* Returns the maximum key and associated value, comparing
@@ -83,7 +70,7 @@ void red_black_tree_minimum(
 void red_black_tree_maximum(
   void **max_key,
   void **max_value,
-  red_black_tree_t *tree
+  const red_black_tree_t *tree
 );
 
 /* Returns the predecessor of a key and value associated with that
@@ -100,9 +87,9 @@ void red_black_tree_maximum(
 void red_black_tree_predecessor(
   void **prec_key,
   void **prec_value,
-  red_black_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const red_black_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data
 );
 
@@ -120,9 +107,9 @@ void red_black_tree_predecessor(
 void red_black_tree_successor(
   void **succ_key,
   void **succ_value,
-  red_black_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const red_black_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data
 );
 
@@ -138,7 +125,7 @@ void red_black_tree_insert(
   red_black_tree_t *tree,
   void *key,
   void *value,
-  int (*compare_key)(void *, void *, void *),
+  int (*compare_key)(const void *, const void *, void *),
   void *(*copy_key)(void *, void *),
   void *(*copy_value)(void *, void *),
   void *data
@@ -155,10 +142,17 @@ void red_black_tree_insert(
 void red_black_tree_remove(
   red_black_tree_t *tree,
   void *key,
-  int (*compare_key)(void *, void *, void *),
+  int (*compare_key)(const void *, const void *, void *),
   void (*delete_key)(void *, void *),
   void (*delete_value)(void *, void *),
   void *data
 );
+
+/* Return heigh of tree if is balance.
+   Return -1 if tree is unbalance.
+
+   O(n)
+*/
+int is_balanced(const red_black_tree_t *tree);
 
 #endif

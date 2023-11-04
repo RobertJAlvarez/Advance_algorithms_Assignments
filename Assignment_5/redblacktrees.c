@@ -1,6 +1,21 @@
 #include <stdio.h>
 #include "redblacktrees.h"
 
+typedef enum { RED_BLACK_TREE_COLOR_RED, RED_BLACK_TREE_COLOR_BLACK } color_t;
+
+typedef struct __tree_node_struct_t {
+  void *key;
+  void *value;
+  color_t color;
+  struct __tree_node_struct_t *parent;
+  struct __tree_node_struct_t *left;
+  struct __tree_node_struct_t *right;
+} tree_node_t;
+
+struct __red_black_tree_struct_t {
+  tree_node_t *root;
+};
+
 static tree_node_t *T_NIL = NULL;
 
 static void error_no_mem(void)
@@ -10,7 +25,7 @@ static void error_no_mem(void)
   exit(1);
 }
 
-static void print2DUtil(tree_node_t *node, int space)
+static void print2DUtil(const tree_node_t *node, const int space, const int print_all)
 {
   char node_color;
 
@@ -18,21 +33,27 @@ static void print2DUtil(tree_node_t *node, int space)
   if (node == T_NIL) return;
  
   // Process right child first
-  print2DUtil(node->right, space+1);
+  print2DUtil(node->right, space+1, print_all);
  
   // Print current node
-  for (int i = 0; i < space; i++) printf("\t");
-  node_color = (node->color == RED_BLACK_TREE_COLOR_RED ? 'R' : 'B');
-  printf("%c: %s,%s\n", node_color, (char *) node->key, (char *) node->value);
+  if (print_all) {
+    for (int i = 0; i < space; i++) printf("\t");
+    node_color = (node->color == RED_BLACK_TREE_COLOR_RED ? 'R' : 'B');
+    printf("%c: %s,%s\n", node_color, (char *) node->key, (char *) node->value);
+  } else {
+    for (int i = 0; i < space; i++) printf(" ");
+    printf("%c\n", (node->color == RED_BLACK_TREE_COLOR_RED ? 'R' : 'B'));
+  }
  
   // Process left child
-  print2DUtil(node->left, space+1);
+  print2DUtil(node->left, space+1, print_all);
 }
 
-void print2D(red_black_tree_t *tree)
+void print2D(const red_black_tree_t *tree, const int print_all)
 {
   if (tree == NULL) return;
-  print2DUtil(tree->root, 0);
+
+  print2DUtil(tree->root, 0, print_all);
 }
 
 red_black_tree_t *red_black_tree_create(void)
@@ -91,9 +112,12 @@ void red_black_tree_delete(
   __red_black_tree_delete_aux(tree->root, delete_key, delete_value, data);
 
   free(tree);
+  free(T_NIL);
+
+  T_NIL = NULL;
 }
 
-static size_t __red_black_tree_number_entries_aux(tree_node_t *node)
+static size_t __red_black_tree_number_entries_aux(const tree_node_t *node)
 {
   size_t l, r;
 //printf("74: __red_black_tree_number_entries_aux()\n");
@@ -106,7 +130,7 @@ static size_t __red_black_tree_number_entries_aux(tree_node_t *node)
   return (l + r) + ((size_t) 1);
 }
 
-size_t red_black_tree_number_entries(red_black_tree_t *tree)
+size_t red_black_tree_number_entries(const red_black_tree_t *tree)
 {
 //printf("86: red_black_tree_number_entries()\n");
   if (tree == NULL) return ((size_t) 0);
@@ -114,7 +138,7 @@ size_t red_black_tree_number_entries(red_black_tree_t *tree)
   return __red_black_tree_number_entries_aux(tree->root);
 }
 
-static size_t __red_black_tree_height_aux(tree_node_t *node)
+static size_t __red_black_tree_height_aux(const tree_node_t *node)
 {
   size_t l, r;
 //printf("95: __red_black_tree_height_aux()\n");
@@ -127,7 +151,7 @@ static size_t __red_black_tree_height_aux(tree_node_t *node)
   return ((l > r) ? l : r) + ((size_t) 1);
 }
 
-size_t red_black_tree_height(red_black_tree_t *tree)
+size_t red_black_tree_height(const red_black_tree_t *tree)
 {
 //printf("107: red_black_tree_height()\n");
   if (tree == NULL) return ((size_t) 0);
@@ -137,8 +161,8 @@ size_t red_black_tree_height(red_black_tree_t *tree)
 
 static void *__red_black_tree_search_aux(
   tree_node_t *node,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   int cmp;
@@ -156,9 +180,9 @@ static void *__red_black_tree_search_aux(
 }
 
 void *red_black_tree_search(
-  red_black_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const red_black_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   tree_node_t *node;
@@ -177,7 +201,7 @@ void *red_black_tree_search(
 void red_black_tree_minimum(
   void **min_key,
   void **min_value,
-  red_black_tree_t *tree)
+  const red_black_tree_t *tree)
 {
   tree_node_t *node;
 
@@ -198,7 +222,7 @@ void red_black_tree_minimum(
 void red_black_tree_maximum(
   void **max_key,
   void **max_value,
-  red_black_tree_t *tree)
+  const red_black_tree_t *tree)
 {
   tree_node_t *node;
 //printf("179: red_black_tree_maximum()\n");
@@ -218,9 +242,9 @@ void red_black_tree_maximum(
 void red_black_tree_predecessor(
   void **prec_key,
   void **prec_value,
-  red_black_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const red_black_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   tree_node_t *x, *y;
@@ -270,9 +294,9 @@ void red_black_tree_predecessor(
 void red_black_tree_successor(
   void **succ_key,
   void **succ_value,
-  red_black_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const red_black_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   tree_node_t *x, *y;
@@ -441,7 +465,7 @@ void red_black_tree_insert(
   red_black_tree_t *tree,
   void *key,
   void *value,
-  int (*compare_key)(void *, void *, void *),
+  int (*compare_key)(const void *, const void *, void *),
   void *(*copy_key)(void *, void *),
   void *(*copy_value)(void *, void *),
   void *data)
@@ -503,7 +527,7 @@ static tree_node_t *__red_black_tree_minimum(tree_node_t *x)
   return x;
 }
 
-static void __red_black_delete_fixup(red_black_tree_t *tree, tree_node_t*x)
+static void __red_black_delete_fixup(red_black_tree_t *tree, tree_node_t *x)
 {
   tree_node_t *w;
 //printf("484: __red_black_delete_fixup()\n");
@@ -570,7 +594,7 @@ static void __red_black_delete_fixup(red_black_tree_t *tree, tree_node_t*x)
 void red_black_tree_remove(
   red_black_tree_t *tree,
   void *key,
-  int (*compare_key)(void *, void *, void *),
+  int (*compare_key)(const void *, const void *, void *),
   void (*delete_key)(void *, void *),
   void (*delete_value)(void *, void *),
   void *data)
@@ -630,5 +654,23 @@ void red_black_tree_remove(
   delete_key(z->key, data);
   delete_value(z->value, data);
   free(z);
+}
+
+static int black_height(const tree_node_t *node)
+{
+  int l, r;
+
+  if (node == T_NIL) return 1;
+  if ((l = black_height(node->left)) == 0) return 0;
+  if ((r = black_height(node->right)) == 0) return 0;
+  if (l != r) return 0;
+
+  return l + (node->color == RED_BLACK_TREE_COLOR_BLACK ? 1 : 0);
+}
+
+int is_balanced(const red_black_tree_t *tree)
+{
+  if (tree == NULL) return 0;
+  return black_height(tree->root);
 }
 
