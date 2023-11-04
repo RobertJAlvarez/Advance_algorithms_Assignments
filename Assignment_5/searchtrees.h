@@ -23,13 +23,13 @@ void search_tree_delete(
 
    Returns zero for an empty tree.
 */
-size_t search_tree_number_entries(search_tree_t *tree);
+size_t search_tree_number_entries(const search_tree_t *tree);
 
 /* Returns the height of a search tree
 
    Returns zero for an empty tree.
 */
-size_t search_tree_height(search_tree_t *tree);
+size_t search_tree_height(const search_tree_t *tree);
 
 /* Searches a search tree for a key, comparing keys with
    compare_key, returning the associated value.
@@ -42,8 +42,8 @@ size_t search_tree_height(search_tree_t *tree);
 */
 void *search_tree_search(
   search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data
 );
 
@@ -56,7 +56,7 @@ void *search_tree_search(
 void search_tree_minimum(
   void **min_key,
   void **min_value,
-  search_tree_t *tree
+  const search_tree_t *tree
 );
 
 /* Returns the maximum key and associated value, comparing
@@ -68,7 +68,7 @@ void search_tree_minimum(
 void search_tree_maximum(
   void **max_key,
   void **max_value,
-  search_tree_t *tree
+  const search_tree_t *tree
 );
 
 /* Returns the predecessor of a key and value associated with that
@@ -85,9 +85,9 @@ void search_tree_maximum(
 void search_tree_predecessor(
   void **prec_key,
   void **prec_value,
-  search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const search_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data
 );
 
@@ -105,9 +105,9 @@ void search_tree_predecessor(
 void search_tree_successor(
   void **succ_key,
   void **succ_value,
-  search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const search_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data
 );
 
@@ -123,7 +123,7 @@ void search_tree_insert(
   search_tree_t *tree,
   void *key,
   void *value,
-  int (*compare_key)(void *, void *, void *),
+  int (*compare_key)(const void *, const void *, void *),
   void *(*copy_key)(void *, void *),
   void *(*copy_value)(void *, void *),
   void *data
@@ -139,8 +139,8 @@ void search_tree_insert(
 */
 void search_tree_remove(
   search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void (*delete_key)(void *, void *),
   void (*delete_value)(void *, void *),
   void *data

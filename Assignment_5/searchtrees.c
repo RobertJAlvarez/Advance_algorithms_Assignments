@@ -38,12 +38,12 @@ static void __search_tree_delete_aux(
   void *data)
 {
   if (node == NULL) return;
-  __search_tree_delete_aux(node->left,
-                           delete_key, delete_value, data);
-  __search_tree_delete_aux(node->right,
-                           delete_key, delete_value, data);
+  __search_tree_delete_aux(node->left, delete_key, delete_value, data);
+  __search_tree_delete_aux(node->right, delete_key, delete_value, data);
+
   delete_key(node->key, data);
   delete_value(node->value, data);
+
   free(node);
 }
 
@@ -57,87 +57,77 @@ void search_tree_delete(
   free(tree);
 }
 
-static size_t __search_tree_number_entries_aux(tree_node_t *node)
+static size_t __search_tree_number_entries_aux(const tree_node_t *node)
 {
-  size_t l, r, n;
+  size_t l, r;
 
   if (node == NULL) return ((size_t) 0);
 
   l = __search_tree_number_entries_aux(node->left);
   r = __search_tree_number_entries_aux(node->right);
 
-  n = (l + r) + ((size_t) 1);
-
-  return n;
+  return (l + r) + ((size_t) 1);
 }
 
-size_t search_tree_number_entries(search_tree_t *tree)
+size_t search_tree_number_entries(const search_tree_t *tree)
 {
   return __search_tree_number_entries_aux(tree->root);
 }
 
-static size_t __search_tree_height_aux(tree_node_t *node)
+static size_t __search_tree_height_aux(const tree_node_t *node)
 {
-  size_t l, r, h;
+  size_t l, r;
 
   if (node == NULL) return ((size_t) 0);
 
   l = __search_tree_height_aux(node->left);
   r = __search_tree_height_aux(node->right);
 
-  h = ((l > r) ? l : r) + ((size_t) 1);
-
-  return h;
+  return ((l > r) ? l : r) + ((size_t) 1);
 }
 
-size_t search_tree_height(search_tree_t *tree)
+size_t search_tree_height(const search_tree_t *tree)
 {
   return __search_tree_height_aux(tree->root);
 }
 
 static tree_node_t *__search_tree_search_aux(
   tree_node_t *node,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   int cmp;
 
-  if (node == NULL) return NULL;
+  while (node != NULL) {
+    cmp = compare_key(key, node->key, data);
+    if (cmp == 0) break;
+    if (cmp < 0) node = node->left;
+    else node = node->right;
+  }
 
-  cmp = compare_key(key, node->key, data);
-
-  if (cmp == 0) return node;
-  if (cmp < 0) return __search_tree_search_aux(node->left,
-                                               key,
-                                               compare_key,
-                                               data);
-  return __search_tree_search_aux(node->right,
-                                  key,
-                                  compare_key,
-                                  data);
+  return node;
 }
 
 void *search_tree_search(
   search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   tree_node_t *node;
 
-  node = __search_tree_search_aux(tree->root,
-                                  key,
-                                  compare_key,
-                                  data);
+  node = __search_tree_search_aux(tree->root, key, compare_key, data);
+
   if (node == NULL) return NULL;
+
   return node->value;
 }
 
 void search_tree_minimum(
   void **min_key,
   void **min_value,
-  search_tree_t *tree)
+  const search_tree_t *tree)
 {
   tree_node_t *node;
 
@@ -156,7 +146,7 @@ void search_tree_minimum(
 void search_tree_maximum(
   void **max_key,
   void **max_value,
-  search_tree_t *tree)
+  const search_tree_t *tree)
 {
   tree_node_t *node;
 
@@ -175,9 +165,9 @@ void search_tree_maximum(
 void search_tree_predecessor(
   void **prec_key,
   void **prec_value,
-  search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const search_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   tree_node_t *x, *y;
@@ -220,9 +210,9 @@ void search_tree_predecessor(
 void search_tree_successor(
   void **succ_key,
   void **succ_value,
-  search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const search_tree_t *tree,
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void *data)
 {
   tree_node_t *x, *y;
@@ -287,7 +277,7 @@ void search_tree_insert(
   search_tree_t *tree,
   void *key,
   void *value,
-  int (*compare_key)(void *, void *, void *),
+  int (*compare_key)(const void *, const void *, void *),
   void *(*copy_key)(void *, void *),
   void *(*copy_value)(void *, void *),
   void *data)
@@ -380,8 +370,8 @@ static void __search_tree_remove_aux(
 
 void search_tree_remove(
   search_tree_t *tree,
-  void *key,
-  int (*compare_key)(void *, void *, void *),
+  const void *key,
+  int (*compare_key)(const void *, const void *, void *),
   void (*delete_key)(void *, void *),
   void (*delete_value)(void *, void *),
   void *data)
