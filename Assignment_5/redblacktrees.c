@@ -668,7 +668,7 @@ static int black_height(const tree_node_t *node)
   return l + (node->color == RED_BLACK_TREE_COLOR_BLACK ? 1 : 0);
 }
 
-int is_balanced(const red_black_tree_t *tree)
+int red_black_tree_is_balanced(const red_black_tree_t *tree)
 {
   if (tree == NULL) return 0;
   return black_height(tree->root);

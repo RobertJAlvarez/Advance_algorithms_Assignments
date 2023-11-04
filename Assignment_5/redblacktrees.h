@@ -153,6 +153,6 @@ void red_black_tree_remove(
 
    O(n)
 */
-int is_balanced(const red_black_tree_t *tree);
+int red_black_tree_is_balanced(const red_black_tree_t *tree);
 
 #endif
