@@ -17,7 +17,8 @@ run: test
 
 clean:
 	rm -f *.o test
-	rm -rf results
+	rm -rf all_attributes_results
+	rm -rf some_attributes_results
 
 redblacktrees.o: redblacktrees.c redblacktrees.h
 searchtrees.o: searchtrees.c searchtrees.h

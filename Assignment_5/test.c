@@ -206,13 +206,13 @@ static void rbt_menu(void)
 
 static char *rand_string(char *str, size_t size)
 {
-  const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  static const char charset[] =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_=+[]{}!@#$%^&*()|;:,<.>/?";
 
   if (size) {
     --size;
     for (size_t n = 0; n < size; n++) {
-      int key = rand() % (int) (sizeof charset - 1);
-      str[n] = charset[key];
+      str[n] = charset[rand() % ((int) (sizeof(charset) - 1))];
     }
     str[size] = '\0';
   }
@@ -220,10 +220,10 @@ static char *rand_string(char *str, size_t size)
   return str;
 }
 
-static void compare_rbt_bst(FILE *fd)
+static void compare_rbt_bst_all_attributes(FILE *fd)
 {
-  const int BUFFER_LEN = 8;
-  const int MAX_SHIFTS = 16;
+  const int BUFFER_LEN = 6;
+  const int MAX_SHIFTS = 20;
 
   char value[BUFFER_LEN];
   char keys[1<<MAX_SHIFTS][BUFFER_LEN];
@@ -239,7 +239,7 @@ static void compare_rbt_bst(FILE *fd)
   rbt = red_black_tree_create();
   bst = search_tree_create();
 
-  fprintf(fd, "n_keys,insert_rbt,insert_bst,search_existent_rbt,search_existent_bst,serch_non_existent_rbt,serch_non_existent_bst,remove_keys_rbt,remove_keys_bst\n");
+  fprintf(fd, "n_keys,max_height_rbt,max_height_bst,insert_rbt,insert_bst,search_existent_rbt,search_existent_bst,serch_non_existent_rbt,serch_non_existent_bst,remove_keys_rbt,remove_keys_bst\n");
 
   for (shifts = 2; shifts <= MAX_SHIFTS; ++shifts) {
     n_keys = 1 << shifts;
@@ -262,15 +262,10 @@ static void compare_rbt_bst(FILE *fd)
         t = clock();
         search_tree_insert(bst, keys[i], value, compare_key, copy_key, copy_value, NULL);
         bst_time += (clock() - t);
-
-        if (red_black_tree_is_balanced(rbt) < 0) {
-          fprintf(stderr, "---\n");
-          fprintf(stderr, "WARNING: tree is not balanced\n");
-          print2D(rbt, /*print_all = */0);
-          fprintf(stderr, "---\n");
-        }
       }
     }
+    fprintf(fd, "%zu,", red_black_tree_height(rbt));
+    fprintf(fd, "%zu,", search_tree_height(bst));
     fprintf(fd, "%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
     fprintf(fd, "%f,", ((double) bst_time)/CLOCKS_PER_SEC);
 
@@ -324,7 +319,59 @@ static void compare_rbt_bst(FILE *fd)
   search_tree_delete(bst, delete_key, delete_value, NULL);
 }
 
-static void print_wait_message(int n) {
+static void compare_rbt_bst(FILE *fd)
+{
+  const int BUFFER_LEN = 6;
+  const int MAX_SHIFTS = 22;
+
+  char value[BUFFER_LEN];
+  char key[BUFFER_LEN];
+  int n_keys;
+
+  clock_t t, rbt_time, bst_time;
+  int shifts, i;
+
+  red_black_tree_t *rbt;
+  search_tree_t *bst;
+
+  rbt = red_black_tree_create();
+  bst = search_tree_create();
+
+  fprintf(fd, "n_keys,max_height_rbt,max_height_bst,insert_rbt,insert_bst\n");
+
+  for (shifts = 2; shifts <= MAX_SHIFTS; ++shifts) {
+    n_keys = 1 << shifts;
+    fprintf(fd, "%d,", n_keys);
+
+    rbt_time = bst_time = 0;
+    for (i = 0; i < n_keys; ++i) {
+      rand_string(key, BUFFER_LEN);
+
+      if (red_black_tree_search(rbt, key, compare_key, NULL) == NULL) {
+        rand_string(value, BUFFER_LEN);
+
+        t = clock();
+        red_black_tree_insert(rbt, key, value, compare_key, copy_key, copy_value, NULL);
+        rbt_time += (clock() - t);
+
+        t = clock();
+        search_tree_insert(bst, key, value, compare_key, copy_key, copy_value, NULL);
+        bst_time += (clock() - t);
+      }
+    }
+    fprintf(fd, "%zu,", red_black_tree_height(rbt));
+    fprintf(fd, "%zu,", search_tree_height(bst));
+    fprintf(fd, "%f,", ((double) rbt_time)/CLOCKS_PER_SEC);
+    fprintf(fd, "%f\n", ((double) bst_time)/CLOCKS_PER_SEC);
+  }
+
+  // Delete everything from tree
+  red_black_tree_delete(rbt, delete_key, delete_value, NULL);
+  search_tree_delete(bst, delete_key, delete_value, NULL);
+}
+
+static void print_wait_message(int n)
+{
   int j, k;
 
   printf("Running %d", n);
@@ -344,25 +391,42 @@ static void random_generation(void)
 {
   const int N_FILES = 10;
   FILE *fptr;
-  char filename[] = "results/result**.csv";
+  char all_filename[]  = "all_attributes_results/result**.csv";
+  char some_filename[] = "some_attributes_results/result**.csv";
   char *t;
   int move_files;
 
-  if ((move_files = mkdir("results", 0744)) != 0) {
-    fprintf(stderr, "Error creating \"results\" folder, %d\n", errno);
-    printf("Note: Make sure that \"results\" folder doesn't exists before running this code.\n");
+  if ((move_files = mkdir("all_attributes_results", 0744)) != 0) {
+    fprintf(stderr, "Error creating \"all_attributes_results\" folder, %d\n", errno);
+    printf("Note: Make sure that \"all_attributes_results\" folder doesn't exists before running this code.\n");
+    exit(1);
+  }
+
+  if ((move_files = mkdir("some_attributes_results", 0744)) != 0) {
+    fprintf(stderr, "Error creating \"some_attributes_results\" folder, %d\n", errno);
+    printf("Note: Make sure that \"some_attributes_results\" folder doesn't exists before running this code.\n");
     exit(1);
   }
 
   for (int i = 1; i <= N_FILES; ++i) {
-    t = &filename[14] + sprintf(&filename[14], "%d", i);
+    srand(time(NULL));
+
+    // All attributes
+    /*
+    t = &all_filename[29] + sprintf(&all_filename[29], "%d", i);
     sprintf(t, "%s", ".csv");
+    fptr = fopen(all_filename, "w");
+    print_wait_message(i);
+    compare_rbt_bst_all_attributes(fptr);
+    fclose(fptr);
+    */
 
-    fptr = fopen(filename, "w");
-
+    // Some attributes
+    t = &some_filename[30] + sprintf(&some_filename[30], "%d", i);
+    sprintf(t, "%s", ".csv");
+    fptr = fopen(some_filename, "w");
     print_wait_message(i);
     compare_rbt_bst(fptr);
-
     fclose(fptr);
   }
 }
