@@ -20,7 +20,6 @@ static tree_node_t *T_NIL = NULL;
 
 static void error_no_mem(void)
 {
-//printf("8: error_no_mem()\n");
   fprintf(stderr, "Error: no memory left.\n");
   exit(1);
 }
@@ -59,7 +58,6 @@ void print2D(const red_black_tree_t *tree, const int print_all)
 red_black_tree_t *red_black_tree_create(void)
 {
   red_black_tree_t *tree;
-//printf("16: red_black_tree_create()\n");
 
   tree = (red_black_tree_t *) calloc(1, sizeof(red_black_tree_t));
   if (tree == NULL) error_no_mem();
@@ -88,7 +86,6 @@ static void __red_black_tree_delete_aux(
   void (*delete_value)(void *, void *),
   void *data)
 {
-//printf("45: __red_black_tree_delete_aux()\n");
   if (node == T_NIL) return;
 
   __red_black_tree_delete_aux(node->left, delete_key, delete_value, data);
@@ -106,7 +103,6 @@ void red_black_tree_delete(
   void (*delete_value)(void *, void *),
   void *data)
 {
-//printf("63: red_black_tree_delete()\n");
   if (tree == NULL) return;
 
   __red_black_tree_delete_aux(tree->root, delete_key, delete_value, data);
@@ -120,7 +116,6 @@ void red_black_tree_delete(
 static size_t __red_black_tree_number_entries_aux(const tree_node_t *node)
 {
   size_t l, r;
-//printf("74: __red_black_tree_number_entries_aux()\n");
 
   if (node == T_NIL) return ((size_t) 0);
 
@@ -132,7 +127,6 @@ static size_t __red_black_tree_number_entries_aux(const tree_node_t *node)
 
 size_t red_black_tree_number_entries(const red_black_tree_t *tree)
 {
-//printf("86: red_black_tree_number_entries()\n");
   if (tree == NULL) return ((size_t) 0);
 
   return __red_black_tree_number_entries_aux(tree->root);
@@ -141,7 +135,6 @@ size_t red_black_tree_number_entries(const red_black_tree_t *tree)
 static size_t __red_black_tree_height_aux(const tree_node_t *node)
 {
   size_t l, r;
-//printf("95: __red_black_tree_height_aux()\n");
 
   if (node == T_NIL) return ((size_t) 0);
 
@@ -153,7 +146,6 @@ static size_t __red_black_tree_height_aux(const tree_node_t *node)
 
 size_t red_black_tree_height(const red_black_tree_t *tree)
 {
-//printf("107: red_black_tree_height()\n");
   if (tree == NULL) return ((size_t) 0);
 
   return __red_black_tree_height_aux(tree->root);
@@ -166,8 +158,6 @@ static void *__red_black_tree_search_aux(
   void *data)
 {
   int cmp;
-
-//printf("121: __red_black_tree_search_aux()\n");
 
   while (node != T_NIL) {
     cmp = compare_key(key, node->key, data);
@@ -187,8 +177,6 @@ void *red_black_tree_search(
 {
   tree_node_t *node;
 
-//printf("141: red_black_tree_search()\n");
-
   if (tree == NULL) return NULL;
 
   node = (tree_node_t *) __red_black_tree_search_aux(tree->root, key, compare_key, data);
@@ -204,8 +192,6 @@ void red_black_tree_minimum(
   const red_black_tree_t *tree)
 {
   tree_node_t *node;
-
-//printf("159: red_black_tree_minimum()\n");
 
   if ((tree == NULL) || (tree->root == T_NIL)) {
     *min_key = NULL;
@@ -225,7 +211,6 @@ void red_black_tree_maximum(
   const red_black_tree_t *tree)
 {
   tree_node_t *node;
-//printf("179: red_black_tree_maximum()\n");
 
   if ((tree == NULL) || (tree->root == T_NIL)) {
     *max_key = NULL;
@@ -248,7 +233,6 @@ void red_black_tree_predecessor(
   void *data)
 {
   tree_node_t *x, *y;
-//printf("202: red_black_tree_predecessor()\n");
 
   if (tree == NULL) {
     *prec_key = NULL;
@@ -300,7 +284,6 @@ void red_black_tree_successor(
   void *data)
 {
   tree_node_t *x, *y;
-//printf("254: red_black_tree_successor()\n");
 
   if (tree == NULL) {
     *succ_key = NULL;
@@ -348,7 +331,6 @@ static void __right_rotate(
   tree_node_t *x)
 {
   tree_node_t *y;
-//printf("302: __right_rotate()\n");
 
   if (x == T_NIL) return;
 
@@ -382,7 +364,6 @@ static void __left_rotate(
   tree_node_t *x)
 {
   tree_node_t *y;
-//printf("336: __left_rotate()\n");
 
   if (x == T_NIL) return;
 
@@ -416,7 +397,6 @@ static void __red_black_insert_fixup(
   tree_node_t *z)
 {
   tree_node_t *y;
-//printf("370: __red_black_insert_fixup()\n");
 
   while (z->parent->color == RED_BLACK_TREE_COLOR_RED) {
     // Is z's parent a left child?
@@ -471,7 +451,6 @@ void red_black_tree_insert(
   void *data)
 {
   tree_node_t *x, *y, *z;
-//printf("425: red_black_tree_insert()\n");
 
   if (tree == NULL) return;
 
@@ -511,7 +490,6 @@ static void __red_black_transplant(
   tree_node_t *u,
   tree_node_t *v)
 {
-//printf("465: __red_black_transplant()\n");
   if (u->parent == T_NIL) tree->root = v;
   else if (u == u->parent->left) u->parent->left = v;
   else u->parent->right = v;
@@ -521,7 +499,6 @@ static void __red_black_transplant(
 
 static tree_node_t *__red_black_tree_minimum(tree_node_t *x)
 {
-//printf("475: __red_black_tree_minimum()\n");
   if (x == T_NIL) return T_NIL;
   while (x->left != T_NIL) x = x->left;
   return x;
@@ -530,7 +507,6 @@ static tree_node_t *__red_black_tree_minimum(tree_node_t *x)
 static void __red_black_delete_fixup(red_black_tree_t *tree, tree_node_t *x)
 {
   tree_node_t *w;
-//printf("484: __red_black_delete_fixup()\n");
 
   while ((x != tree->root) && (x->color == RED_BLACK_TREE_COLOR_BLACK)) {
     // Is x a left child?
@@ -601,7 +577,6 @@ void red_black_tree_remove(
 {
   tree_node_t *x, *y, *z;
   color_t y_org_color;
-//printf("555: red_black_tree_remove()\n");
 
   if (tree == NULL) return;
 

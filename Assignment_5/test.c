@@ -412,14 +412,12 @@ static void random_generation(void)
     srand(time(NULL));
 
     // All attributes
-    /*
     t = &all_filename[29] + sprintf(&all_filename[29], "%d", i);
     sprintf(t, "%s", ".csv");
     fptr = fopen(all_filename, "w");
     print_wait_message(i);
     compare_rbt_bst_all_attributes(fptr);
     fclose(fptr);
-    */
 
     // Some attributes
     t = &some_filename[30] + sprintf(&some_filename[30], "%d", i);

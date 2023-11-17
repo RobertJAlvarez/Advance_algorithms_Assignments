@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 
-
 typedef struct __search_tree_struct_t search_tree_t;
 
 /* Creates an empty search tree */
