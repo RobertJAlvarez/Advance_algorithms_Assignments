@@ -1,5 +1,7 @@
 # Advance algorithms Assignment 1
 
+$a \ne 0$
+
 - The Fibonacci sequence can be defined by T(1) = 1, T(2) = 1 and
 $ T(n) = T(n−1) +T(n−2), n \ge 3 $
 Binet proposed a closed formula for the Fibonacci sequence:
