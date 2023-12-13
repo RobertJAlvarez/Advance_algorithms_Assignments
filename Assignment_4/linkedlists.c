@@ -25,7 +25,11 @@ list_t *create_list(void) {
   return list;
 }
 
-void delete_list(list_t *list, void (*delete_data)(void *, void *), void *data) {
+void delete_list(
+  list_t *list,
+  void (*delete_data)(void *, void *),
+  void *data)
+{
   node_t *curr, *next;
 
   for (curr = list->head; curr != NULL; curr = next) {
@@ -36,11 +40,13 @@ void delete_list(list_t *list, void (*delete_data)(void *, void *), void *data) 
   free(list);
 }
 
-int is_empty_list(list_t *list) {
+int is_empty_list(list_t *list)
+{
   return (list->head == NULL);
 }
 
-size_t length_list(list_t *list) {
+size_t length_list(list_t *list)
+{
   size_t i;
   node_t *curr;
 
@@ -49,10 +55,15 @@ size_t length_list(list_t *list) {
        curr=curr->next) {
     i++;
   }
+
   return i;
 }
 
-void iterate_over_list(list_t *list, void (*operation)(void *, void *), void *data) {
+void iterate_over_list(
+  list_t *list,
+  void (*operation)(void *, void *),
+  void *data)
+{
   node_t *curr;
 
   for (curr=list->head;
@@ -62,7 +73,12 @@ void iterate_over_list(list_t *list, void (*operation)(void *, void *), void *da
   }
 }
 
-void *search_list(list_t *list, void *elem, int (*compare_elements)(void *, void *, void *), void *data) {
+void *search_list(
+  list_t *list,
+  void *elem,
+  int (*compare_elements)(void *, void *, void *),
+  void *data)
+{
   node_t *curr;
 
   for (curr=list->head;
@@ -71,10 +87,12 @@ void *search_list(list_t *list, void *elem, int (*compare_elements)(void *, void
     if (compare_elements(elem, curr->data, data) == 0)
       return curr->data;
   }
+
   return NULL;
 }
 
-void *get_ith_element_of_list(list_t *list, size_t i) {
+void *get_ith_element_of_list(list_t *list, size_t i)
+{
   size_t k;
   node_t *curr;
 
@@ -87,7 +105,6 @@ void *get_ith_element_of_list(list_t *list, size_t i) {
   return NULL;
 }
 
-// TODO
 static void print_list(list_t *list)
 {
   printf("value = %p\n", list);
@@ -104,7 +121,11 @@ static void print_list(list_t *list)
   }
 }
 
-void prepend_to_list(list_t *list, void *elem, void *(*copy_element)(void *, void *), void *data)
+void prepend_to_list(
+  list_t *list,
+  void *elem,
+  void *(*copy_element)(void *, void *),
+  void *data)
 {
   node_t *new_node;
 
@@ -135,7 +156,12 @@ void prepend_to_list(list_t *list, void *elem, void *(*copy_element)(void *, voi
   print_list((list_t *) temp->value);
 }
 
-void append_to_list(list_t *list, void *elem, void *(*copy_element)(void *, void *), void *data) {
+void append_to_list(
+  list_t *list,
+  void *elem,
+  void *(*copy_element)(void *, void *),
+  void *data)
+{
   node_t *new_node;
 
   new_node = (node_t *) calloc(1, sizeof(node_t));
